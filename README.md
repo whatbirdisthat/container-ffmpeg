@@ -16,3 +16,6 @@ and stripping everything else out to make a tiny tiny tiny image.
 
 This is a work in progress :)
 
+It is entirely based on [this](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu).
+
+The ffmpeg CompilationGuides are awesome. In fact `ffmpeg` is pretty darn awesome.
