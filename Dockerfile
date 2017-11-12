@@ -134,9 +134,8 @@ RUN cd ffmpeg && \
 
 RUN hash -r
 
-
 WORKDIR /root/bin
 
-CMD [ "echo", "ffmpeg :)" ]
-#CMD [ "ffmpeg" ]
+#CMD [ "echo", "ffmpeg :)" ]
+CMD [ "ffmpeg" ]
 
