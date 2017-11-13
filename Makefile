@@ -11,4 +11,18 @@ uninstall:
 	rm -f ${HOME}/.containers.d/$(container)
 	rm -f ${HOME}/.containers.d/$(image)
 
+run-ffmpeg-large:
+	docker run -it --rm whatbirdisthat/$(item)-large bash
+
+run-ffmpeg-small:
+	docker run -it --rm whatbirdisthat/$(item)-small ash
+
+ffmpeg-small:
+	docker build -t whatbirdisthat/$(item)-small --file ${PWD}/Dockerfile-small .
+	docker run -it --rm whatbirdisthat/$(item)-small ash
+
+ffmpeg-large:
+	docker build -t whatbirdisthat/$(item)-large --file ${PWD}/Dockerfile .
+	docker run -it --rm whatbirdisthat/$(item)-large bash
+
 .PHONY: all clean

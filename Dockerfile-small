@@ -1,0 +1,22 @@
+FROM whatbirdisthat/ffmpeg-large as filestorage
+
+WORKDIR /root/bin
+
+RUN echo "lds" > lds.txt
+RUN tar -cvf lds.tar lds.txt
+RUN rm lds.txt
+RUN ldd ffmpeg | grep '=>' | awk '{print $3}' | grep -v '(0x.*)' | xargs -n1 tar --check-links -rf lds.tar
+RUN ldd ffmpeg | grep -v '=>' | awk '{print $1}' | xargs -n1 tar --check-links -rf lds.tar
+
+CMD [ "echo", "ffmpeg :)" ]
+
+FROM alpine
+WORKDIR /usr/local/bin
+COPY --from=filestorage /root/bin/* /usr/local/bin/
+
+WORKDIR /
+RUN tar -C / -xvf /usr/local/bin/lds.tar
+
+CMD bash
+#CMD [ "ffmpeg" ]
+
