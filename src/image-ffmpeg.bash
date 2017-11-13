@@ -1,6 +1,7 @@
-docker run -it --rm \
-  -v `pwd`:`pwd` \
-  -w `pwd` \
-  whatbirdisthat/ffmpeg \
-  "$@"
+#
+#docker run -it --rm \
+#  -v `pwd`:`pwd` \
+#  -w `pwd` \
+#  whatbirdisthat/ffmpeg \
+#  "$@"
 

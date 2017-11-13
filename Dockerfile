@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu as buildmachine
 
 RUN apt-get update \
   && apt-get install -y \
@@ -25,11 +25,7 @@ RUN apt-get update \
   libxcb-shm0-dev \
   libxcb-xfixes0-dev
 
-#COPY container-assets/build-ffmpeg.sh /root/
-
 #RUN apt install ffmpeg -y
-
-#RUN /root/build-ffmpeg.sh
 
 RUN mkdir /root/ffmpeg_sources
 RUN mkdir /root/ffmpeg_build
@@ -46,7 +42,6 @@ RUN cd ~/ffmpeg_sources && \
   PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
   make && \
   make install
-
 
 RUN cd ~/ffmpeg_sources && \
 wget -O yasm-1.3.0.tar.gz http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
@@ -70,14 +65,12 @@ PATH="$HOME/bin:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/f
 PATH="$HOME/bin:$PATH" make && \
 make install
 
-
 RUN cd ~/ffmpeg_sources && \
 git -C libvpx pull 2> /dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
 cd libvpx && \
 PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm && \
 PATH="$HOME/bin:$PATH" make && \
 make install
-
 
 RUN cd ~/ffmpeg_sources && \
 git -C fdk-aac pull 2> /dev/null || git clone --depth 1 https://github.com/mstorsjo/fdk-aac && \
@@ -87,7 +80,6 @@ autoreconf -fiv && \
 make && \
 make install
 
-
 RUN cd ~/ffmpeg_sources && \
 wget -O lame-3.100.tar.gz http://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz && \
 tar xzvf lame-3.100.tar.gz && \
@@ -96,7 +88,6 @@ PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME
 PATH="$HOME/bin:$PATH" make && \
 make install
 
-
 RUN cd ~/ffmpeg_sources && \
 git -C opus pull 2> /dev/null || git clone --depth 1 https://github.com/xiph/opus.git && \
 cd opus && \
@@ -104,7 +95,6 @@ cd opus && \
 ./configure --prefix="$HOME/ffmpeg_build" --disable-shared && \
 make && \
 make install
-
 
 RUN cd ~/ffmpeg_sources && \
 wget -O ffmpeg-snapshot.tar.bz2 http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
@@ -137,5 +127,14 @@ RUN hash -r
 WORKDIR /root/bin
 
 #CMD [ "echo", "ffmpeg :)" ]
+
+FROM alpine
+WORKDIR /usr/local/bin
+COPY --from=buildmachine /root/bin/* /usr/local/bin/
+
+COPY --from=buildmachine /lib/**/* /lib/
+COPY --from=buildmachine /usr/lib/**/* /usr/lib/
+COPY --from=buildmachine /lib64/**/* /lib64/
+
 CMD [ "ffmpeg" ]
 
