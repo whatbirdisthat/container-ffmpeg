@@ -32,8 +32,5 @@ create-command:
 uninstall:
 	rm /usr/local/bin/${item}
 
-ffmpeg-large:
-	docker build -t whatbirdisthat/$(item)-large --file ${PWD}/Dockerfile .
-
 .PHONY: all clean
 
