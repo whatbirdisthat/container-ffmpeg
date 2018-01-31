@@ -126,20 +126,5 @@ RUN hash -r
 
 WORKDIR /root/bin
 
-#CMD bash
-#CMD "/root/bin/ffmpeg"
 ENTRYPOINT [ "/root/bin/ffmpeg" ]
-
-#CMD [ "echo", "ffmpeg :)" ]
-
-#FROM alpine
-#WORKDIR /usr/local/bin
-#COPY --from=buildmachine /root/bin/* /usr/local/bin/
-
-#COPY --from=buildmachine /lib/**/* /lib/
-#COPY --from=buildmachine /usr/local/lib/**/* /usr/lib/
-#COPY --from=buildmachine /usr/lib/**/* /usr/lib/
-#COPY --from=buildmachine /lib64/**/* /lib64/
-
-#CMD [ "ffmpeg" ]
 
