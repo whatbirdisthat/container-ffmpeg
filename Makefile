@@ -3,26 +3,37 @@ container = container-$(item)
 image = image-$(item)
 version = 1.0
 
-install: uninstall
-	ln -s ${PWD}/src/$(container).bash $${HOME}/.containers.d/$(container)
-	cp ${PWD}/src/$(image).bash $${HOME}/.containers.d/$(image)
+clean:
+	rm -f ${HOME}/.containers.d/$(image)
+	docker rm $(container) || true
+	docker rmi $(image)
+
+define RUN_COMMAND
+#!/bin/bash
+#$(image)() {
+docker run -it --rm         \
+-v `pwd`:`pwd` -w `pwd`     \
+-h $(image).local  \
+$(image) "$$@"
+#}
+endef
+
+export RUN_COMMAND
+
+install: create-command
+	docker build -t "${image}" \
+	--squash \
+	.
+
+create-command:
+	echo "$$RUN_COMMAND" > "/usr/local/bin/${item}"
+	chmod u+x "/usr/local/bin/${item}"
 
 uninstall:
-	rm -f ${HOME}/.containers.d/$(container)
-	rm -f ${HOME}/.containers.d/$(image)
-
-run-ffmpeg-large:
-	docker run -it --rm whatbirdisthat/$(item)-large bash
-
-run-ffmpeg-small:
-	docker run -it --rm whatbirdisthat/$(item)-small ash
-
-ffmpeg-small:
-	docker build -t whatbirdisthat/$(item)-small --file ${PWD}/Dockerfile-small .
-	docker run -it --rm whatbirdisthat/$(item)-small ash
+	rm /usr/local/bin/${item}
 
 ffmpeg-large:
 	docker build -t whatbirdisthat/$(item)-large --file ${PWD}/Dockerfile .
-	docker run -it --rm whatbirdisthat/$(item)-large bash
 
 .PHONY: all clean
+

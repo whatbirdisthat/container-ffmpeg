@@ -127,7 +127,9 @@ RUN hash -r
 WORKDIR /root/bin
 
 #CMD bash
-CMD "/root/bin/ffmpeg"
+#CMD "/root/bin/ffmpeg"
+ENTRYPOINT [ "/root/bin/ffmpeg" ]
+
 #CMD [ "echo", "ffmpeg :)" ]
 
 #FROM alpine
